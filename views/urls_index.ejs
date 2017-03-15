@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+<header>
+</header>
+
+  <% for (url in urls) {
+    let deleteurl = "/urls/" + url + "/delete" %>
+    <li><%= url %>: <%= urls[url] %></li>
+    <form method="POST" action=<%= deleteurl %>>
+      <input type="submit" value="delete">
+    </form>
+  <% } %>
+  <p>"add your new url to make it short" <a href = "http://localhost:8080/urls/new"> click here</a></p>
+
+
+
+</body>
+</html>
