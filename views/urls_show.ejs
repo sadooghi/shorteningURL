@@ -4,8 +4,7 @@
   <title>TinyApp</title>
 </head>
 <body>
-<header>
-</header>
+<%- include('partials/_header') %>
   <%= shortURL%> : <%= urls[shortURL] %>
   <form action="/urls/<%= shortURL %>" method="POST" style="margin:150px;">
       <label for="longURL"><%=`shortURL: ${shortURL}` %></label>
