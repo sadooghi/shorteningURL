@@ -117,12 +117,13 @@ app.post("/login", (req, res) => {
     }
   }
   if(!checking) {
+    res.status(403);
     res.redirect("/");
   }
 })
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls/new");
 })
 
