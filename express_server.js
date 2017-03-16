@@ -63,7 +63,12 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let user_id = req.cookies.user_id;
   let templateVars = {user: userDatabase[user_id]}
-  res.render("urls_new", templateVars);
+  if(user_id){
+     res.render("urls_new", templateVars);
+   }else{
+    res.redirect("/login");
+   }
+
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -73,8 +78,8 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  console.log(req);
   let shortURL = generateRandomString();
-  console.log(shortURL, req.body.longURL);
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
