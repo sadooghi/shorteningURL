@@ -100,17 +100,40 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) =>{
   res.render("register")
 })
-
+function checkemail (email){
+  console.log('userDatabase', userDatabase);
+  for(idnum in userDatabase){
+    console.log('idnum', idnum)
+    if(userDatabase[idnum].email === email){
+      return true;
+    }
+  }
+  return false;
+}
 app.post("/register", (req, res) =>{
-  let newid = generateRandomString();
-  userDatabase[newid] = {};
-  userDatabase[newid].id = newid;
-  userDatabase[newid].email = req.body.email;
-  userDatabase[newid].password = req.body.password;
-  res.cookie("user_id", newid);
+  if (req.body.email == "" || req.body.password == ""){
+    res.status(400).send('Eror 400: Please fill both Email address and Password sections!');
+    return;
+  } else if(checkemail(req.body.email)){
+    res.status(400).send('Error 400: this email address has been used before. If you have an account go to login page');
+    return;
+  }else{
+    let newid = generateRandomString();
+    userDatabase[newid] = {};
+    userDatabase[newid].id = newid;
+    userDatabase[newid].email = req.body.email;
+    userDatabase[newid].password = req.body.password;
+    console.log(userDatabase);
+    res.cookie("user_id", newid);
+  }
   res.redirect("/login");
 })
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
+
+
+
