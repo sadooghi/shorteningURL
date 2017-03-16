@@ -12,6 +12,8 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+let userDatabase = {}
+
 function generateRandomString() {
   let random = [];
   let choice = { 1: "num" , 2: "alphabet"};
@@ -69,9 +71,9 @@ app.post("/urls/:id/delete",(req, res) => {
 })
 
 app.post("/urls/:id",(req, res) => {
-  res.redirect("/urls");
   console.log(req.params.id, req.body.longURL)
   urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect("/urls");
 })
 
 app.get("/u/:shortURL", (req, res) => {
@@ -81,6 +83,10 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/login", (req, res) =>{
+  res.render("login", {username: null});
+})
+
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
   res.redirect("/urls/new");
@@ -89,6 +95,17 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls/new");
+})
+
+app.get("/register", (req, res) =>{
+  res.render("register")
+})
+
+app.post("/register", (req, res) =>{
+  userDatabase[req.body.email] = req.body.password;
+  console.log(userDatabase);
+
+  res.redirect("/login");
 })
 
 app.listen(PORT, () => {
