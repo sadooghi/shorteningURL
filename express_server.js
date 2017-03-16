@@ -12,18 +12,7 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-let userDatabase = {
-  "sd34w55": {
-    id: "sd34w55",
-    email: "test@test.com",
-    password: "testuser1"
-  },
-  "jds345d": {
-    id: "jds345d",
-    email: "example@example.com",
-    password: "test2user2"
-  }
-}
+let userDatabase = {};
 
 function generateRandomString() {
   let random = [];
@@ -115,11 +104,10 @@ app.get("/register", (req, res) =>{
 app.post("/register", (req, res) =>{
   let newid = generateRandomString();
   userDatabase[newid] = {};
-  userDatabase[newid][id] = newid;
+  userDatabase[newid].id = newid;
   userDatabase[newid].email = req.body.email;
   userDatabase[newid].password = req.body.password;
-  console.log(userDatabase);
-
+  res.cookie("user_id", newid);
   res.redirect("/login");
 })
 
