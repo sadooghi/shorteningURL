@@ -78,9 +78,11 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req);
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {};
+  urlDatabase[shortURL].longURL = req.body.longURL;
+  urlDatabase[shortURL].userID = req.cookies.user_id;
+  console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -96,9 +98,7 @@ app.post("/urls/:id",(req, res) => {
 })
 
 app.get("/u/:shortURL", (req, res) => {
-  console.log(urlDatabase)
   let longURL = urlDatabase[req.params.shortURL];
-  console.log(longURL);
   res.redirect(longURL);
 });
 
@@ -114,6 +114,8 @@ app.get("/login", (req, res) =>{
 
 app.post("/login", (req, res) => {
   let checking = false;
+  console.log(req.body);
+  console.log(userDatabase);
   for(idnum in userDatabase){
     if(req.body.username === userDatabase[idnum].email && req.body.password === userDatabase[idnum].password) {
       res.cookie("user_id" , idnum);
