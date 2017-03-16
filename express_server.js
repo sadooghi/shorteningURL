@@ -12,7 +12,19 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-let userDatabase = {};
+let userDatabase = {
+  "dfs34d": {
+    id: "dfs34d",
+    email: "test@test.com",
+    password: "test1user"
+  },
+  "rtg34d": {
+    id: "rtg34d",
+    email: "test2@test.com",
+    password: "user2test"
+  }
+};
+
 
 function generateRandomString() {
   let random = [];
@@ -42,19 +54,21 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-    let templateVars = { urls: urlDatabase , username: req.cookies["username"]};
+  let user_id = req.cookies.user_id;
+    let templateVars = { urls: urlDatabase , user: userDatabase[user_id]};
     res.render("urls_index", templateVars);
 
 });
 
 app.get("/urls/new", (req, res) => {
-
-  let templateVars = {username: req.cookies["username"]}
+  let user_id = req.cookies.user_id;
+  let templateVars = {user: userDatabase[user_id]}
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id , urls : urlDatabase, username: req.cookies["username"]};
+  let user_id = req.cookies.user_id;
+  let templateVars = { shortURL: req.params.id , urls : urlDatabase, user: userDatabase[user_id]};
   res.render("urls_show", templateVars);
 });
 
@@ -84,12 +98,27 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) =>{
-  res.render("login", {username: null});
+  let user = null;
+  for(idnum in userDatabase){
+    if(req.cookies.user_id === idnum){
+      user = userDatabase[idnum];
+    }
+  }
+  res.render("login", {user: user});
 })
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls/new");
+  let checking = false;
+  for(idnum in userDatabase){
+    if(req.body.username === userDatabase[idnum].email && req.body.password === userDatabase[idnum].password) {
+      res.cookie("user_id" , idnum);
+      checking = true;
+      res.redirect("/urls/new");
+    }
+  }
+  if(!checking) {
+    res.redirect("/");
+  }
 })
 
 app.post("/logout", (req, res) => {
@@ -101,9 +130,7 @@ app.get("/register", (req, res) =>{
   res.render("register")
 })
 function checkemail (email){
-  console.log('userDatabase', userDatabase);
   for(idnum in userDatabase){
-    console.log('idnum', idnum)
     if(userDatabase[idnum].email === email){
       return true;
     }
@@ -123,7 +150,6 @@ app.post("/register", (req, res) =>{
     userDatabase[newid].id = newid;
     userDatabase[newid].email = req.body.email;
     userDatabase[newid].password = req.body.password;
-    console.log(userDatabase);
     res.cookie("user_id", newid);
   }
   res.redirect("/login");
