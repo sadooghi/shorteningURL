@@ -55,8 +55,9 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let user_id = req.cookies.user_id;
-    let templateVars = { urls: urlDatabase , user: userDatabase[user_id]};
-    res.render("urls_index", templateVars);
+  let templateVars = { urls: urlDatabase , user: userDatabase[user_id]};
+
+  res.render("urls_index", templateVars);
 
 });
 
@@ -74,7 +75,12 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let user_id = req.cookies.user_id;
   let templateVars = { shortURL: req.params.id , urls : urlDatabase, user: userDatabase[user_id]};
-  res.render("urls_show", templateVars);
+  for(idnum in userDatabase){
+    if(urlDatabase[req.params.id].userID === idnum){
+      res.render("urls_show", templateVars);
+    }
+  }
+    res.status(401).send("only the owner (creator) of the URL can edit the link.")
 });
 
 app.post("/urls", (req, res) => {
@@ -87,8 +93,14 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id/delete",(req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
+  for(idnum in userDatabase){
+    if(urlDatabase[req.params.id].userID === idnum){
+      delete urlDatabase[req.params.id];
+      res.redirect("/urls");
+    }
+  }
+    res.status(401).send("only the owner (creator) of the URL can edit the link.")
+
 })
 
 app.post("/urls/:id",(req, res) => {
