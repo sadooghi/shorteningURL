@@ -12,13 +12,24 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-let userDatabase = {}
+let userDatabase = {
+  "sd34w55": {
+    id: "sd34w55",
+    email: "test@test.com",
+    password: "testuser1"
+  },
+  "jds345d": {
+    id: "jds345d",
+    email: "example@example.com",
+    password: "test2user2"
+  }
+}
 
 function generateRandomString() {
   let random = [];
   let choice = { 1: "num" , 2: "alphabet"};
   let alohbt = ["a","s","d","f","g","h","j","k","l","z","x","c","v","b","n","m","q","w","e","r","t","y","u","i","o","p"];
-  for (let i =0; i < 7; i++){
+  for (let i =0; i < 6; i++){
     if (choice[(Math.round(Math.random()) + 1).toString()] == "num"){
       random.push((Math.round(Math.random() * 10)));
     } else {
@@ -102,7 +113,11 @@ app.get("/register", (req, res) =>{
 })
 
 app.post("/register", (req, res) =>{
-  userDatabase[req.body.email] = req.body.password;
+  let newid = generateRandomString();
+  userDatabase[newid] = {};
+  userDatabase[newid][id] = newid;
+  userDatabase[newid].email = req.body.email;
+  userDatabase[newid].password = req.body.password;
   console.log(userDatabase);
 
   res.redirect("/login");
@@ -111,5 +126,3 @@ app.post("/register", (req, res) =>{
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
