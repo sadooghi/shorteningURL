@@ -170,7 +170,6 @@ res.redirect("/");
 })
 
 app.post("/logout", (req, res) => {
-  // res.session={};
   req.session = null;
   res.redirect("/urls/new");
 })
