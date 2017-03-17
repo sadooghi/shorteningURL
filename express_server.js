@@ -6,6 +6,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
+const bcrypt = require('bcrypt');
 
 let urlDatabase = {
   "b2xVn2": {
@@ -148,20 +149,20 @@ app.get("/login", (req, res) =>{
 })
 
 app.post("/login", (req, res) => {
-  let checking = false;
-  console.log(req.body);
+  console.log("req.body",req.body);
   console.log(userDatabase);
   for(idnum in userDatabase){
-    if(req.body.username === userDatabase[idnum].email && req.body.password === userDatabase[idnum].password) {
+  let pass= "";
+  if(req.body.username === userDatabase[idnum].email){
+    pass = userDatabase[idnum].password
+    if(bcrypt.compareSync(req.body.password, pass)){
       res.cookie("user_id" , idnum);
-      checking = true;
       res.redirect("/urls/new");
     }
   }
-  if(!checking) {
-    res.status(403);
-    res.redirect("/");
-  }
+}
+res.status(403);
+res.redirect("/");
 })
 
 app.post("/logout", (req, res) => {
@@ -182,10 +183,11 @@ app.post("/register", (req, res) =>{
     return;
   }else{
     let newid = generateRandomString();
+    let hashed_password = bcrypt.hashSync(req.body.password, 10);
     userDatabase[newid] = {};
     userDatabase[newid].id = newid;
     userDatabase[newid].email = req.body.email;
-    userDatabase[newid].password = req.body.password;
+    userDatabase[newid].password = hashed_password;
     res.cookie("user_id", newid);
   }
   res.redirect("/login");
@@ -194,6 +196,7 @@ app.post("/register", (req, res) =>{
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
 
 
 
