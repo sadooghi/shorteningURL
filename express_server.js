@@ -4,12 +4,14 @@ const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-var cookieSession = require('cookie-session');
+const cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
   keys: ["ghazaleh"],
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));
 const bcrypt = require('bcrypt');
 
 let urlDatabase = {
@@ -104,12 +106,8 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let user_id = req.session.user_id;
   let templateVars = { shortURL: req.params.id , urls : urlDatabase, user: userDatabase[user_id]};
-  for(idnum in userDatabase){
-    if(urlDatabase[req.params.id].userID === idnum){
-      res.render("urls_show", templateVars);
-    }
-  }
-    res.status(401).send("only the owner (creator) of the URL can edit the link.")
+  res.render("urls_show", templateVars);
+
 });
 
 app.post("/urls", (req, res) => {
@@ -118,10 +116,10 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL].longURL = req.body.longURL;
   urlDatabase[shortURL].userID = req.session.user_id;
   console.log(urlDatabase);
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls`);
 });
 
-app.post("/urls/:id/delete",(req, res) => {
+app.delete("/urls/:id",(req, res) => {
   for(idnum in userDatabase){
     if(urlDatabase[req.params.id].userID === idnum){
       delete urlDatabase[req.params.id];
@@ -132,9 +130,16 @@ app.post("/urls/:id/delete",(req, res) => {
 
 })
 
-app.post("/urls/:id",(req, res) => {
-  urlDatabase[req.params.id] = {longURL: req.body.longURL, userID: req.session.user_id};
-  res.redirect("/urls");
+app.put("/urls/:id",(req, res) => {
+
+    for(idnum in userDatabase){
+    if(urlDatabase[req.params.id].userID === idnum){
+      urlDatabase[req.params.id] = {longURL: req.body.longURL, userID: req.session.user_id};
+      res.redirect("/urls");
+    }
+  }
+    res.status(401).send("only the owner (creator) of the URL can edit the link.")
+
 })
 
 app.get("/u/:shortURL", (req, res) => {

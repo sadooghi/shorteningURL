@@ -7,7 +7,7 @@
 <%- include('partials/_header') %>
 
   <% for (url in urls) {
-    let deleteurl = "/urls/" + url + "/delete" %>
+    let deleteurl = "/urls/" + url + "/?_method=DELETE" %>
     <li><%= url %>: <%= urls[url].longURL %></li>
     <form method="POST" action=<%= deleteurl %>>
       <input type="submit" value="delete">
