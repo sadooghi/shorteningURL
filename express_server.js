@@ -55,19 +55,6 @@ function checkemail (email){
   return false;
 }
 
-// function urlsForUser(id){
-//   let userurls = {};
-//   let checkvar = false;
-//   for(shortURL in urlDatabase){
-//     if(urlDatabase[shortURL].userID === id){
-//       userurls[shortURL] = userurls[longURL];
-//       checkvar = true;
-//     }
-//   }
-//   if(!checkvar){
-//     res.status(403).send("please log in or register first.")
-//   }
-// }
 
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -146,8 +133,8 @@ app.post("/urls/:id",(req, res) => {
 })
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  let record = urlDatabase[req.params.shortURL];
+  res.redirect(record.longURL);
 });
 
 app.get("/login", (req, res) =>{
