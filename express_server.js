@@ -4,8 +4,12 @@ const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-const cookieParser = require('cookie-parser');
-app.use(cookieParser());
+var cookieSession = require('cookie-session');
+app.use(cookieSession({
+  name: 'session',
+  keys: ["ghazaleh"],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 const bcrypt = require('bcrypt');
 
 let urlDatabase = {
@@ -70,7 +74,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let user_id = req.cookies.user_id;
+  let user_id = req.session.user_id;
   let userurls = {};
   let templateVars = { urls: userurls , user: userDatabase[user_id]};
 
@@ -87,7 +91,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let user_id = req.cookies.user_id;
+  let user_id = req.session.user_id;
   let templateVars = {user: userDatabase[user_id]}
   if(user_id){
      res.render("urls_new", templateVars);
@@ -98,7 +102,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let user_id = req.cookies.user_id;
+  let user_id = req.session.user_id;
   let templateVars = { shortURL: req.params.id , urls : urlDatabase, user: userDatabase[user_id]};
   for(idnum in userDatabase){
     if(urlDatabase[req.params.id].userID === idnum){
@@ -112,7 +116,7 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = {};
   urlDatabase[shortURL].longURL = req.body.longURL;
-  urlDatabase[shortURL].userID = req.cookies.user_id;
+  urlDatabase[shortURL].userID = req.session.user_id;
   console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
@@ -129,7 +133,7 @@ app.post("/urls/:id/delete",(req, res) => {
 })
 
 app.post("/urls/:id",(req, res) => {
-  urlDatabase[req.params.id] = {longURL: req.body.longURL, userID: req.cookies.user_id};
+  urlDatabase[req.params.id] = {longURL: req.body.longURL, userID: req.session.user_id};
   res.redirect("/urls");
 })
 
@@ -141,7 +145,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/login", (req, res) =>{
   let user = null;
   for(idnum in userDatabase){
-    if(req.cookies.user_id === idnum){
+    if(req.session.user_id === idnum){
       user = userDatabase[idnum];
     }
   }
@@ -156,7 +160,7 @@ app.post("/login", (req, res) => {
   if(req.body.username === userDatabase[idnum].email){
     pass = userDatabase[idnum].password
     if(bcrypt.compareSync(req.body.password, pass)){
-      res.cookie("user_id" , idnum);
+      req.session.user_id = idnum;
       res.redirect("/urls/new");
     }
   }
@@ -166,7 +170,8 @@ res.redirect("/");
 })
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  // res.session={};
+  req.session = null;
   res.redirect("/urls/new");
 })
 
@@ -188,8 +193,9 @@ app.post("/register", (req, res) =>{
     userDatabase[newid].id = newid;
     userDatabase[newid].email = req.body.email;
     userDatabase[newid].password = hashed_password;
-    res.cookie("user_id", newid);
+    req.session.user_id = newid;
   }
+
   res.redirect("/login");
 })
 
