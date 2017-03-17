@@ -8,8 +8,13 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 let urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca"
+  },
+
+  "9sm5xK": {
+    longURL: "http://www.google.com"
+  }
 };
 
 let userDatabase = {
@@ -41,6 +46,29 @@ function generateRandomString() {
   return result;
 }
 
+function checkemail (email){
+  for(idnum in userDatabase){
+    if(userDatabase[idnum].email === email){
+      return true;
+    }
+  }
+  return false;
+}
+
+// function urlsForUser(id){
+//   let userurls = {};
+//   let checkvar = false;
+//   for(shortURL in urlDatabase){
+//     if(urlDatabase[shortURL].userID === id){
+//       userurls[shortURL] = userurls[longURL];
+//       checkvar = true;
+//     }
+//   }
+//   if(!checkvar){
+//     res.status(403).send("please log in or register first.")
+//   }
+// }
+
 app.get("/", (req, res) => {
   res.end("Hello!");
 });
@@ -55,10 +83,19 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let user_id = req.cookies.user_id;
-  let templateVars = { urls: urlDatabase , user: userDatabase[user_id]};
+  let userurls = {};
+  let templateVars = { urls: userurls , user: userDatabase[user_id]};
 
-  res.render("urls_index", templateVars);
-
+  if (templateVars.user === undefined){
+    res.status(403).send("please log in or register first.")
+  }else {
+    for(shortURL in urlDatabase){
+      if(urlDatabase[shortURL].userID === user_id){
+        userurls[shortURL] = urlDatabase[shortURL];
+      }
+    }
+    res.render("urls_index", templateVars);
+  }
 });
 
 app.get("/urls/new", (req, res) => {
@@ -104,8 +141,7 @@ app.post("/urls/:id/delete",(req, res) => {
 })
 
 app.post("/urls/:id",(req, res) => {
-  console.log(req.params.id, req.body.longURL)
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id] = {longURL: req.body.longURL, userID: req.cookies.user_id};
   res.redirect("/urls");
 })
 
@@ -149,14 +185,7 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) =>{
   res.render("register")
 })
-function checkemail (email){
-  for(idnum in userDatabase){
-    if(userDatabase[idnum].email === email){
-      return true;
-    }
-  }
-  return false;
-}
+
 app.post("/register", (req, res) =>{
   if (req.body.email == "" || req.body.password == ""){
     res.status(400).send('Eror 400: Please fill both Email address and Password sections!');

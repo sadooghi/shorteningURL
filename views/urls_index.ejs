@@ -8,7 +8,7 @@
 
   <% for (url in urls) {
     let deleteurl = "/urls/" + url + "/delete" %>
-    <li><%= url %>: <%= urls[url] %></li>
+    <li><%= url %>: <%= urls[url].longURL %></li>
     <form method="POST" action=<%= deleteurl %>>
       <input type="submit" value="delete">
     </form>
