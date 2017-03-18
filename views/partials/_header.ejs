@@ -4,7 +4,9 @@
   <a href= "/register"> register here</a>
   <a href= "/login"> login</a>
 <% }else {  %>
-  <form action="/logout" method="POST" style="margin:150px;">
+  <p><%= user.email%></p>
+  <a href= "/urls"> My Links </a>
+  <form action="/logout" method="POST">
   <input type="submit" value="logout">
   </form>
 <% }%>
