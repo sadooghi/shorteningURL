@@ -162,7 +162,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.delete("/urls/:id",(req, res) => {
-    if(urlDatabase[req.params.id].userID ){
+    if(urlDatabase[req.params.id].userID == req.session.user_id ){
       delete urlDatabase[req.params.id];
       res.redirect("/urls");
     } else {
@@ -219,7 +219,7 @@ app.get("/login", (req, res) =>{
     if(userDatabase[req.session.user_id] ){
       res.redirect("/")
     } else {
-      res.status(200);
+      // res.status(200);
       res.render("login");
 
     }
