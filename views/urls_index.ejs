@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>TinyApp</title>
-</head>
-<body>
-<%- include('partials/_header') %>
-
-  <% for (url in urls) {
-    let deleteurl = "/urls/" + url + "/?_method=DELETE" %>
-    <li><%= url %>: <%= urls[url].longURL %></li>
-    <form method="POST" action=<%= deleteurl %>>
-      <input type="submit" value="delete">
-    </form>
-    <a href="/urls/<%= url %>">update</a>
-  <% } %>
-  <p>"add your new url to make it short" <a href = "http://localhost:8080/urls/new"> click here</a></p>
-
-
-
-</body>
+  <head>
+    <title>TinyApp</title>
+  </head>
+  <body>
+  <%- include('partials/_header') %>
+    <% for (url in urls) {
+      let deleteurl = "/urls/" + url + "/?_method=DELETE" %>
+      <li><%= url %>: <%= urls[url].longURL %></li>
+      <form method="POST" action=<%= deleteurl %>>
+        <input type="submit" value="delete">
+      </form>
+      <a href="/urls/<%= url %>">update</a>
+    <% } %>
+    <p>"add your new url to make it short" <a href = "http://localhost:8080/urls/new"> click here</a></p>
+  </body>
 </html>

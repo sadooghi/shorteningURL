@@ -162,12 +162,12 @@ app.post("/urls", (req, res) => {
 });
 
 app.delete("/urls/:id",(req, res) => {
-    if(urlDatabase[req.params.id].userID == req.session.user_id ){
-      delete urlDatabase[req.params.id];
-      res.redirect("/urls");
-    } else {
-        res.status(401).send("only the owner (creator) of the URL can edit the link.")
-    }
+  if(urlDatabase[req.params.id].userID == req.session.user_id ){
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+  } else {
+      res.status(401).send("only the owner (creator) of the URL can edit the link.")
+  }
 });
 
 app.put("/urls/:id",(req, res) => {
@@ -216,28 +216,30 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) =>{
-    if(userDatabase[req.session.user_id] ){
-      res.redirect("/")
-    } else {
-      // res.status(200);
-      res.render("login");
+  if(userDatabase[req.session.user_id] ){
+    res.redirect("/")
+  } else {
+    // res.status(200);
+    res.render("login");
 
-    }
+  }
 });
 
 app.post("/login", (req, res) => {
-  for (idnum in userDatabase) {
   let pass= "";
-  if(req.body.username === userDatabase[idnum].email){
-    pass = userDatabase[idnum].password
-    if (bcrypt.compareSync(req.body.password, pass)) {
-      req.session.user_id = idnum;
-      res.redirect("/");
-    }
+  for (idnum in userDatabase) {
+
+    if(req.body.username === userDatabase[idnum].email){
+      pass = userDatabase[idnum].password
+      if (bcrypt.compareSync(req.body.password, pass)) {
+        req.session.user_id = idnum;
+        return res.redirect("/");
+      }
   }
 }
-res.status(401).send("Email/Password is not valid.");
-res.redirect("/");
+  res.status(401).send("Email/Password is not valid.").redirect("/");
+
+
 });
 
 app.post("/logout", (req, res) => {

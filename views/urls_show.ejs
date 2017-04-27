@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>TinyApp</title>
-</head>
-<body style="font-size:20px; padding:50px;">
-<%- include('partials/_header') %>
+  <head>
+    <title>TinyApp</title>
+  </head>
+  <body style="font-size:20px; padding:50px;">
+    <%- include('partials/_header') %>
 
-<% let deleteurl = "/urls/" + shortURL + "/?_method=DELETE" %>
-  <%= shortURL%> : <%= urls[shortURL].longURL %>
-  <% let updateurl = "/urls/" + shortURL + "/?_method=PUT" %>
-  <p>this URL was visited <%= urls[shortURL].count %> times</p>
-  <form method="POST" action= <%= updateurl%> style="margin:150px;">
-      <label for="longURL"><%=`shortURL: ${shortURL}` %></label>
-      <input id="longURL" type="text" name="longURL" placeholder="http://" >
-      <input type="submit" value="update">
-    </form>
-    <form method="POST" action=<%= deleteurl %>>
-      <input type="submit" value="delete">
-    </form>
-</body>
+    <% let deleteurl = "/urls/" + shortURL + "/?_method=DELETE" %>
+      <%= shortURL%> : <%= urls[shortURL].longURL %>
+      <% let updateurl = "/urls/" + shortURL + "/?_method=PUT" %>
+      <p>this URL was visited <%= urls[shortURL].count %> times</p>
+      <form method="POST" action= <%= updateurl%> style="margin:150px;">
+        <label for="longURL"><%=`shortURL: ${shortURL}` %></label>
+        <input id="longURL" type="text" name="longURL" placeholder="http://" >
+        <input type="submit" value="update">
+      </form>
+      <form method="POST" action=<%= deleteurl %>>
+        <input type="submit" value="delete">
+      </form>
+  </body>
 </html>
